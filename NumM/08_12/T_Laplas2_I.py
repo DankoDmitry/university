@@ -1,65 +1,75 @@
-# Решение неоднородного уравнения Лапласа от одной переменной
+# Решение неоднородного уравнения Лапласа от двух переменных
 
-# Simple Numerical Laplace Equation Solution using Finite Difference Method
 import numpy as np
 import matplotlib.pyplot as plt
 
+N = 20
+Tau = 10**(-6)
+
 def f(r):
-    return np.sin((5*r*np.pi/2)/20)
+    return np.sin((5*r*np.pi/2)/N)
 
-# Set maximum iteration
-maxIter = 1000
-
-# Set Dimension and delta
-lenX = lenY = 20 #we set it rectangular
+lenX = lenY = N 
 delta = 1
 
-r = np.linspace(0, 20, 20)
+r = np.linspace(0, N, N)
 
-# Boundary condition
 Ttop = f(r)
 Tbottom = 0
 Tleft = 0
 Tright = 0
 
-# Initial guess of interior grid
-Tguess = 30
+Tguess = 10
 
-# Set colour interpolation and colour map
 colorinterpolation = 50
-colourMap = plt.cm.jet #you can try: colourMap = plt.cm.coolwarm
+colourMap = plt.cm.jet
 
-# Set meshgrid
 X, Y = np.meshgrid(np.arange(0, lenX), np.arange(0, lenY))
 
-# Set array size and set the interior value with Tguess
 T = np.empty((lenX, lenY))
 T.fill(Tguess)
 
-# Set Boundary condition
 print(np.shape(Ttop))
 T[(lenY-1):, :] = Ttop
 T[:1, :] = Tbottom
 T[:, (lenX-1):] = Tright
 T[:, :1] = Tleft
 
-# Iteration (We assume that the iteration is convergence in maxIter = 500)
-print("Please wait for a moment")
-for iteration in range(0, maxIter):
+S = np.empty((N, N)) 
+S_1 = np.empty((N, N)) 
+
+def E(x):
+    return np.exp(2.5*x**np.pi)
+
+def analit(r, z):
+    return (E(z) - E(-1*z))/(E(1) - E(-1))
+
+Error = 1
+while Error > Tau:
+    Error = 0
     for i in range(1, lenX-1, delta):
         for j in range(1, lenY-1, delta):
             T[i, j] = 0.25 * (T[i+1][j] + T[i-1][j] + T[i][j+1] + T[i][j-1])
+            e = abs(T[i, j]-S[i,j])
+            S[i,j] = T[i, j]
+            if Error < e: Error = e
+            S_1[i, j] = analit(i, j)
 
-print("Iteration finished")
+    print (Error)
 
-# Configure the contour
+
+
 plt.title("Contour of Temperature")
 plt.contourf(X, Y, T, colorinterpolation, cmap=colourMap)
-
-# Set Colorbar
 plt.colorbar()
-
-# Show the result in the plot window
 plt.show()
 
 print("")
+
+ax = plt.axes(projection='3d')
+ax.plot_surface(X, Y, T, cmap='viridis', edgecolor='green')
+ax.set_title('Contour of Temperature')
+plt.show()
+
+
+ab = max(abs(S_1 - T))
