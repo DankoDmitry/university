@@ -28,10 +28,10 @@ def Alfa(i):
 def Beta(i):
     return (18*F(i) - 2)/(3*Alfa(i-1) + 12)
 
-m = [0.] * (n-1)
+m = [0.] * (n)
 
-for j in range(n-3):
-    i = n-3-j
+for j in range(n-2):
+    i = n-2-j
     m[i] = Alfa(i)*m[i+1] + Beta(i)
 
 
@@ -56,6 +56,8 @@ print (ef)
 
 plt.plot(t, Ge, color = 'blue', label = 'g')
 plt.plot(t, f(t), color = 'green', label = 'f')
+plt.scatter(1.3, 1, color = 'r', label = '(-1, 0)')
+plt.xlim(-1, 2)
 plt.legend()
 plt.show()
 

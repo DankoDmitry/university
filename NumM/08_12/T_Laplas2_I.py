@@ -37,12 +37,17 @@ T[:, :1] = Tleft
 
 S = np.empty((N, N)) 
 S_1 = np.empty((N, N)) 
+S_an = np.empty((lenX, lenY))
+S_an.fill(Tguess)
 
 def E(x):
-    return np.exp(2.5*x**np.pi)
+    x = x
+    return np.exp(2.5*x*np.pi)
 
 def analit(r, z):
-    return (E(z) - E(-1*z))/(E(1) - E(-1))
+    r = r/N
+    z = z/N
+    return ((E(z) - E(-1*z))/(E(1) - E(-1))) * np.sin(2.5*r*np.pi)
 
 Error = 1
 while Error > Tau:
@@ -53,7 +58,6 @@ while Error > Tau:
             e = abs(T[i, j]-S[i,j])
             S[i,j] = T[i, j]
             if Error < e: Error = e
-            S_1[i, j] = analit(i, j)
 
     print (Error)
 
@@ -64,7 +68,7 @@ plt.contourf(X, Y, T, colorinterpolation, cmap=colourMap)
 plt.colorbar()
 plt.show()
 
-print("")
+# print("")
 
 ax = plt.axes(projection='3d')
 ax.plot_surface(X, Y, T, cmap='viridis', edgecolor='green')
@@ -72,4 +76,17 @@ ax.set_title('Contour of Temperature')
 plt.show()
 
 
-ab = max(abs(S_1 - T))
+Error_an = 0
+
+for i in range(1, lenX-1, delta):
+    for j in range(1, lenY-1, delta):
+        e_an = abs(S[i, j]-analit(i, j))
+        S_an[i, j] = analit(i, j)
+        if Error_an < e_an: Error_an = e_an
+
+print("wiuvnakjvnkjnk        ", Error_an)
+
+ax = plt.axes(projection='3d')
+ax.plot_surface(X, Y, S_an, cmap='viridis', edgecolor='green')
+ax.set_title('Contour of Temperature')
+plt.show()
