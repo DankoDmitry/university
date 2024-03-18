@@ -12,7 +12,7 @@ def Messure(A, B):
     return np.sqrt(s)
 
 def U_b(x):
-    return np.sin(np.pi * x)
+    return np.sin(np.pi * x / 2)
 
 def LaPlaS_Simp(L_b, U_b, D_b, l, h, E):
     N = int(l/h) + 1
@@ -29,24 +29,28 @@ def LaPlaS_Simp(L_b, U_b, D_b, l, h, E):
 
     dif = 1
 
+    # while k < 1000 :
+    #     y = x_s
+    #     for i in range(1, N-1):
+    #         for j in range(1, N-1):
+    #             y[i,j] = (x[i-1,j]+x[i+1,j]+x[i,j-1]+x[i,j+1])/4
+    #     y[-1] = y[-2]
+    #     print("--------- ", x[40,40], " ----- ", y[40,40])
+    #     dif = Messure(x,y)
+    #     x = y
+    #     k+=1
+
     while k < 1000 :
-        y = x_s
         for i in range(1, N-1):
             for j in range(1, N-1):
-                y[i,j] = (x[i-1,j]+x[i+1,j]+x[i,j-1]+x[i,j+1])/4
-        y[-1] = y[-2]
-        dif = Messure(x,y)
-        x = y
+                x[i,j] = (x[i-1,j]+x[i+1,j]+x[i,j-1]+x[i,j+1])/4
+        x[-1] = x[-2]
         k+=1
 
-    return (y)
-
-N = int(1/0.5) + 1
-x, y = np.zeros((N,N)), np.zeros((N,N))
-for i in range(1,N): print(i)
+    return (x)
 
 
-h = 0.01
+h = 0.1
 colorinterpolation = 50
 colourMap = plt.cm.jet
 
